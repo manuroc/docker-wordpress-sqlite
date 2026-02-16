@@ -4,7 +4,7 @@ Lightweight WordPress container with Nginx 1.28 & PHP-FPM 8.4 based on Alpine Li
 
 Uses SQLite for database storage for speed and portability. No separate MySQL or MariaDB container necessary. You can optionally uncomment lines in docker-compose.yml to enable nginx-reverse-proxy to setup HTTPS access to Wordpress.
 
-Extra PHP extensions have also been added for performance, such as APCu. For portable setups (which benefit from the SQLite database), it is recommended to use an SQLite-based permanent object cache as well via the appropriate Wordpress plugin.
+Extra PHP extensions have also been added for performance, such as APCu. For portable setups (which benefit from the SQLite database), it is recommended to use an SQLite-based permanent object cache as well via the appropriate Wordpress plugin (installed by default but not enabled).
 
 _WordPress version currently installed:_ **6.9.1**
 
