@@ -92,7 +92,15 @@ RUN curl -o sqlite.tar.gz -SL https://github.com/WordPress/sqlite-database-integ
   && chown -R nobody:nobody /usr/src/wordpress/wp-content/plugins/sqlite-database-integration \
   && chown nobody:nobody /usr/src/wordpress/wp-content/db.php
 
-
+# Add SQLite Permanent object cache plugin
+RUN curl -o sqlite-cache.tar.gz -SL https://github.com/OllieJones/sqlite-object-cache/archive/refs/tags/1.6.1.tar.gz \
+  && tar -xzf sqlite-cache.tar.gz -C /usr/src/wordpress/wp-content/plugins \
+  && mv /usr/src/wordpress/wp-content/plugins/sqlite-object-cache-1.6.1 /usr/src/wordpress/wp-content/plugins/sqlite-object-cache \
+  && rm -rf usr/src/wordpress/wp-content/plugins/sqlite-object-cache/.github \
+  && rm -rf usr/src/wordpress/wp-content/plugins/sqlite-object-cache/.wordpress-org \
+  && rm sqlite-cache.tar.gz \
+  && chown -R nobody:nobody /usr/src/wordpress/wp-content/plugins/sqlite-object-cache \
+  
 # Add WP CLI
 ENV WP_CLI_CONFIG_PATH=/usr/src/wordpress/wp-cli.yml
 RUN curl -o /usr/local/bin/wp https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
