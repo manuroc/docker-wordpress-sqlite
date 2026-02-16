@@ -99,7 +99,7 @@ RUN curl -o sqlite-cache.tar.gz -SL https://github.com/OllieJones/sqlite-object-
   && rm -rf usr/src/wordpress/wp-content/plugins/sqlite-object-cache/.github \
   && rm -rf usr/src/wordpress/wp-content/plugins/sqlite-object-cache/.wordpress-org \
   && rm sqlite-cache.tar.gz \
-  && chown -R nobody:nobody /usr/src/wordpress/wp-content/plugins/sqlite-object-cache \
+  && chown -R nobody:nobody /usr/src/wordpress/wp-content/plugins/sqlite-object-cache
   
 # Add WP CLI
 ENV WP_CLI_CONFIG_PATH=/usr/src/wordpress/wp-cli.yml
