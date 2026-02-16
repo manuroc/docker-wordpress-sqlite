@@ -84,9 +84,9 @@ RUN curl -o wordpress.tar.gz -SL https://wordpress.org/wordpress-${WORDPRESS_VER
   && chown -R nobody:nobody /usr/src/wordpress
 
 # Add SQLite DB plugin
-RUN curl -o sqlite.tar.gz -SL https://github.com/WordPress/sqlite-database-integration/archive/refs/tags/v2.2.14.tar.gz \
+RUN curl -o sqlite.tar.gz -SL https://github.com/WordPress/sqlite-database-integration/archive/refs/tags/v2.2.17.tar.gz \
   && tar -xzf sqlite.tar.gz -C /usr/src/wordpress/wp-content/plugins \
-  && mv /usr/src/wordpress/wp-content/plugins/sqlite-database-integration-2.2.14 /usr/src/wordpress/wp-content/plugins/sqlite-database-integration \
+  && mv /usr/src/wordpress/wp-content/plugins/sqlite-database-integration-2.2.17 /usr/src/wordpress/wp-content/plugins/sqlite-database-integration \
   && cp /usr/src/wordpress/wp-content/plugins/sqlite-database-integration/db.copy /usr/src/wordpress/wp-content/db.php \
   && rm sqlite.tar.gz \
   && chown -R nobody:nobody /usr/src/wordpress/wp-content/plugins/sqlite-database-integration \
