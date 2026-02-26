@@ -28,4 +28,4 @@ primary_region = 'nrt'
   FS_METHOD = 'direct'
   WP_DEBUG = 'true'
   WP_DEBUG_DISPLAY = 'true'
-
+  DB_NAME = '/var/www/wp-content/database/.ht.sqlite'
