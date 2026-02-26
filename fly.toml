@@ -20,7 +20,9 @@ primary_region = 'nrt'
   cpus = 1
   memory_mb = 256
 
+[mounts]
+  source = 'wp_data'
+  destination = '/var/www/wp-content'
 
 [env]
-  WORDPRESS_SITE_URL = 'https://docker-wordpress-sqlite.fly.dev'
   FS_METHOD = 'direct'
