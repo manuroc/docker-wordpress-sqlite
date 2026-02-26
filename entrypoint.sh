@@ -10,6 +10,20 @@ if [ ! -f "/var/www/wp-content/db.php" ]; then
     cp -r /usr/src/wordpress/wp-content /var/www/
     chown -R nobody:nobody /var/www
 fi
+
+# Fix ownership
+chown -R nobody:nobody /var/www/wp-content
+
+# Directories need execute bit to be traversable
+find /var/www/wp-content -type d -exec chmod 755 {} \;
+
+# Files readable/writable by owner only
+find /var/www/wp-content -type f -exec chmod 644 {} \;
+
+# Lock down the database directory specifically
+chmod 700 /var/www/wp-content/database
+chmod 600 /var/www/wp-content/database/.ht.sqlite
+
 # Check if wp-secrets.php exists
 if ! [ -f "/var/www/wp-content/wp-secrets.php" ]; then
     echo '<?php' > /var/www/wp-content/wp-secrets.php
