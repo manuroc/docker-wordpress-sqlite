@@ -20,17 +20,6 @@ primary_region = 'nrt'
   cpus = 1
   memory_mb = 256
 
-[[services]]
-  internal_port = 80
-  protocol = 'tcp'
-
-  [[services.ports]]
-    port = 80
-    handlers = ['http']
-
-  [[services.ports]]
-    port = 443
-    handlers = ['tls', 'http']
 
 [env]
   WORDPRESS_SITE_URL = 'https://docker-wordpress-sqlite.fly.dev'
