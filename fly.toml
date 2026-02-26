@@ -26,3 +26,6 @@ primary_region = 'nrt'
 
 [env]
   FS_METHOD = 'direct'
+  WP_DEBUG: 'true'
+  WP_DEBUG_DISPLAY: 'true'
+
