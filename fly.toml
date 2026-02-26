@@ -25,5 +25,4 @@ primary_region = 'nrt'
   destination = '/var/www/wp-content'
 
 [env]
-  WORDPRESS_SITE_URL = 'https://docker-wordpress-sqlite.fly.dev'
   FS_METHOD = 'direct'
