@@ -19,48 +19,49 @@ LABEL org.opencontainers.image.description="Lightweight WordPress container with
 
 # Install packages
 RUN apk --no-cache add \
-  php84 \
-  php84-fpm \
-  php84-mysqli \
-  php84-json \
-  php84-openssl \
-  php84-curl \
-  php84-zlib \
-  php84-xml \
-  php84-phar \
-  php84-intl \
-  php84-dom \
-  php84-xmlreader \
-  php84-xmlwriter \
-  php84-exif \
-  php84-fileinfo \
-  php84-sodium \
-  php84-gd \
-  php84-simplexml \
-  php84-ctype \
-  php84-mbstring \
-  php84-zip \
-  php84-opcache \
-  php84-iconv \
-  php84-pecl-imagick \
-  php84-session \
-  php84-tokenizer \
-  php84-sqlite3 \
-  php84-pecl-apcu \
-  php84-pdo_sqlite \
-  php84-pecl-igbinary \
+  php85 \
+  php85-fpm \
+  php85-mysqli \
+  php85-json \
+  php85-openssl \
+  php85-curl \
+  php85-zlib \
+  php85-xml \
+  php85-phar \
+  php85-intl \
+  php85-dom \
+  php85-xmlreader \
+  php85-xmlwriter \
+  php85-exif \
+  php85-fileinfo \
+  php85-sodium \
+  php85-gd \
+  php85-simplexml \
+  php85-ctype \
+  php85-mbstring \
+  php85-zip \
+  php85-opcache \
+  php85-iconv \
+  php85-pecl-imagick \
+  php85-session \
+  php85-tokenizer \
+  php85-sqlite3 \
+  php85-pecl-apcu \
+  php85-pdo_sqlite \
+  php85-pecl-igbinary \
   nginx \
   supervisor \
   curl \
   bash \
-  less
+  less \
+  unzip
 
 # Configure nginx
 COPY config/nginx.conf /etc/nginx/nginx.conf
 
 # Configure PHP-FPM
-COPY config/fpm-pool.conf /etc/php84/php-fpm.d/zzz_custom.conf
-COPY config/php.ini /etc/php84/conf.d/zzz_custom.ini
+COPY config/fpm-pool.conf /etc/php85/php-fpm.d/zzz_custom.conf
+COPY config/php.ini /etc/php85/conf.d/zzz_custom.ini
 
 # Configure supervisord
 COPY config/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
@@ -71,8 +72,8 @@ WORKDIR /var/www/wp-content
 RUN chown -R nobody:nobody /var/www
 
 # WordPress
-ENV WORDPRESS_VERSION=6.9.1
-ENV WORDPRESS_SHA1=2914d37c00597e6216a88f90e22b1b4c7bbd09e8
+ENV WORDPRESS_VERSION=7.0
+ENV WORDPRESS_SHA1=e50bb75667ecaa0eac0694fb3c7b024afc96fde0
 
 RUN mkdir -p /usr/src
 
@@ -84,23 +85,13 @@ RUN curl -o wordpress.tar.gz -SL https://wordpress.org/wordpress-${WORDPRESS_VER
   && chown -R nobody:nobody /usr/src/wordpress
 
 # Add SQLite DB plugin
-RUN curl -o sqlite.tar.gz -SL https://github.com/WordPress/sqlite-database-integration/archive/refs/tags/v2.2.17.tar.gz \
-  && tar -xzf sqlite.tar.gz -C /usr/src/wordpress/wp-content/plugins \
-  && mv /usr/src/wordpress/wp-content/plugins/sqlite-database-integration-2.2.17 /usr/src/wordpress/wp-content/plugins/sqlite-database-integration \
+RUN curl -o sqlite.zip -SL https://downloads.wordpress.org/plugin/sqlite-database-integration.2.2.23.zip \
+  && unzip sqlite.zip -d /usr/src/wordpress/wp-content/plugins \
   && cp /usr/src/wordpress/wp-content/plugins/sqlite-database-integration/db.copy /usr/src/wordpress/wp-content/db.php \
-  && rm sqlite.tar.gz \
+  && rm sqlite.zip \
   && chown -R nobody:nobody /usr/src/wordpress/wp-content/plugins/sqlite-database-integration \
   && chown nobody:nobody /usr/src/wordpress/wp-content/db.php
 
-# Add SQLite Permanent object cache plugin
-RUN curl -o sqlite-cache.tar.gz -SL https://github.com/OllieJones/sqlite-object-cache/archive/refs/tags/1.6.1.tar.gz \
-  && tar -xzf sqlite-cache.tar.gz -C /usr/src/wordpress/wp-content/plugins \
-  && mv /usr/src/wordpress/wp-content/plugins/sqlite-object-cache-1.6.1 /usr/src/wordpress/wp-content/plugins/sqlite-object-cache \
-  && rm -rf usr/src/wordpress/wp-content/plugins/sqlite-object-cache/.github \
-  && rm -rf usr/src/wordpress/wp-content/plugins/sqlite-object-cache/.wordpress-org \
-  && rm sqlite-cache.tar.gz \
-  && chown -R nobody:nobody /usr/src/wordpress/wp-content/plugins/sqlite-object-cache
-  
 # Add WP CLI
 ENV WP_CLI_CONFIG_PATH=/usr/src/wordpress/wp-cli.yml
 RUN curl -o /usr/local/bin/wp https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
