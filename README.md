@@ -1,32 +1,24 @@
 # WordPress Docker Container
 
-Lightweight WordPress container with Nginx 1.28 & PHP-FPM 8.4 based on Alpine Linux.
+Lightweight WordPress container with Nginx 1.28 & PHP-FPM 8.5 based on Alpine Linux.
 
-Uses SQLite for database storage for speed and portability. No separate MySQL or MariaDB container necessary. You can optionally uncomment lines in docker-compose.yml to enable nginx-reverse-proxy to setup HTTPS access to Wordpress.
+Uses SQLite for database storage for speed and portability. No separate MySQL or MariaDB container necessary.
 
-Extra PHP extensions have also been added for performance, such as APCu. For portable setups (which benefit from the SQLite database), it is recommended to use an SQLite-based permanent object cache as well via the appropriate Wordpress plugin (installed by default but not enabled).
+Extra PHP extensions have also been added for performance, such as APCu.
 
-_WordPress version currently installed:_ **6.9.1**
+_WordPress version currently installed:_ **7.0**
 
-- Used in production for many sites, making it stable, tested and up-to-date
+- Can be used in production
 - Optimized for 100 concurrent users
 - Optimized to only use resources when there's traffic (by using PHP-FPM's ondemand PM)
 - Works with Amazon Cloudfront or CloudFlare as SSL terminator and CDN
 - Multi-platform, supporting AMD4, ARMv6, ARMv7, ARM64
 - Built on the lightweight Alpine Linux distribution
 - Small Docker image size (+/-90MB)
-- Uses PHP 8.4 for the best performance, low cpu usage & memory footprint
+- Uses PHP 8.5 for the best performance, low cpu usage & memory footprint
 - Can safely be updated without losing data
 - Fully configurable because wp-config.php uses the environment variables you can pass as an argument to the container
 
-[![Docker Pulls](https://img.shields.io/docker/pulls/trafex/wordpress.svg)](https://hub.docker.com/r/trafex/wordpress/)
-![nginx 1.28](https://img.shields.io/badge/nginx-1.28-brightgreen.svg)
-![php 8.4](https://img.shields.io/badge/php-8.4-brightgreen.svg)
-![License MIT](https://img.shields.io/badge/license-MIT-blue.svg)
-
-## [![Trafex Consultancy](https://timdepater.com/logo/mini-logo.png)](https://timdepater.com?mtm_campaign=github)
-
-I can help you with [Containerization, Kubernetes, Monitoring, Infrastructure as Code and other DevOps challenges](https://timdepater.com/?mtm_campaign=github).
 
 ## Usage
 
@@ -48,19 +40,10 @@ This image follows the **Debian versioning convention** for tagging: `<wordpress
 
 ### Running the Container
 
-See [docker-compose.yml](https://github.com/TrafeX/docker-wordpress/blob/master/docker-compose.yml) how to use it in your own environment.
+See [docker-compose.yml](https://github.com/manuroc/docker-wordpress-sqlite/blob/master/docker-compose.yml) how to use it in your own environment.
 
     docker-compose up
 
-Or
-
-    docker run -d -p 80:80 -v /local/folder:/var/www/wp-content \
-    -e "DB_HOST=db" \
-    -e "DB_NAME=wordpress" \
-    -e "DB_USER=wp" \
-    -e "DB_PASSWORD=secret" \
-    -e "FS_METHOD=direct" \
-    trafex/wordpress
 
 ### WP-CLI
 
