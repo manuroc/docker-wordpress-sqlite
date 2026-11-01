@@ -24,6 +24,7 @@ check "apcu extension is loaded"                php85 -r 'exit(extension_loaded(
 check "pdo_sqlite extension is loaded"          php85 -r 'exit(extension_loaded("pdo_sqlite") ? 0 : 1);'
 check "igbinary extension is loaded"            php85 -r 'exit(extension_loaded("igbinary") ? 0 : 1);'
 check "OPcache is available"                    php85 -r 'exit(function_exists("opcache_get_status") ? 0 : 1);'
+check "database directory is blocked in nginx"  sh -c 'nginx -T 2>/dev/null | grep -qF "location ^~ /wp-content/database/"'
 check "page cache directory is writable by nginx" su -s /bin/sh nginx -c 'test -w /var/cache/nginx/fastcgi'
 
 exit "$failed"
