@@ -3,30 +3,43 @@
 # terminate on errors
 set -e
 
+WP_CONTENT=/var/www/wp-content
+DB_DIR="$WP_CONTENT/database"
+
 # Check if volume is empty
-if [ ! -f "/var/www/wp-content/db.php" ]; then
+if [ ! -f "$WP_CONTENT/db.php" ]; then
     echo 'Setting up wp-content volume'
     # Copy wp-content from Wordpress src to volume
     cp -r /usr/src/wordpress/wp-content /var/www/
     chown -R nobody:nobody /var/www
 fi
 
-# Fix ownership
-chown -R nobody:nobody /var/www/wp-content
-
+# Only touch ownership and permissions of paths that are not already correct, instead of
+# rewriting everything on every start (slow on large media libraries). The database
+# directory is handled separately below.
+#
+# Ownership
+find "$WP_CONTENT" \( ! -user nobody -o ! -group nobody \) -exec chown nobody:nobody {} +
 # Directories need execute bit to be traversable
-find /var/www/wp-content -type d -exec chmod 755 {} \;
-
+find "$WP_CONTENT" -path "$DB_DIR" -prune -o -type d ! -perm 755 -exec chmod 755 {} +
 # Files readable/writable by owner only
-find /var/www/wp-content -type f -exec chmod 644 {} \;
+find "$WP_CONTENT" -path "$DB_DIR" -prune -o -type f ! -perm 644 -exec chmod 644 {} +
 
 # Lock down the database directory specifically
-chmod 700 /var/www/wp-content/database
-chmod 600 /var/www/wp-content/database/.ht.sqlite
+if [ -d "$DB_DIR" ]; then
+    chmod 700 "$DB_DIR"
+    # Includes the -wal and -shm files SQLite creates next to the database
+    find "$DB_DIR" -type f ! -perm 600 -exec chmod 600 {} +
+fi
+
+# Generate a random alphanumeric string of the given length, without external services
+random_string() {
+    tr -dc 'A-Za-z0-9' < /dev/urandom | head -c "${1:-64}"
+}
 
 # Check if wp-secrets.php exists
-if ! [ -f "/var/www/wp-content/wp-secrets.php" ]; then
-    echo '<?php' > /var/www/wp-content/wp-secrets.php
+if ! [ -f "$WP_CONTENT/wp-secrets.php" ]; then
+    echo '<?php' > "$WP_CONTENT/wp-secrets.php"
     # Check that secrets environment variables are not set
     if [ ! $AUTH_KEY ] \
     && [ ! $SECURE_AUTH_KEY ] \
@@ -37,8 +50,11 @@ if ! [ -f "/var/www/wp-content/wp-secrets.php" ]; then
     && [ ! $LOGGED_IN_SALT ] \
     && [ ! $NONCE_SALT ]; then
         echo "Generating wp-secrets.php"
-        # Generate secrets
-        curl -f https://api.wordpress.org/secret-key/1.1/salt/ >> /var/www/wp-content/wp-secrets.php
+        # Generate secrets locally
+        for name in AUTH_KEY SECURE_AUTH_KEY LOGGED_IN_KEY NONCE_KEY AUTH_SALT SECURE_AUTH_SALT LOGGED_IN_SALT NONCE_SALT; do
+            echo "define('$name', '$(random_string 64)');" >> "$WP_CONTENT/wp-secrets.php"
+        done
     fi
+    chown nobody:nobody "$WP_CONTENT/wp-secrets.php"
 fi
 exec "$@"

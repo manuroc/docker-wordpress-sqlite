@@ -57,8 +57,15 @@ RUN apk --no-cache add \
 
 # Configure nginx
 COPY config/nginx.conf /etc/nginx/nginx.conf
+COPY config/security-headers.conf /etc/nginx/security-headers.conf
+
+# Directory for the nginx FastCGI page cache (nginx workers run as the nginx user)
+RUN mkdir -p /var/cache/nginx/fastcgi \
+  && chown -R nginx:nginx /var/cache/nginx
 
 # Configure PHP-FPM
+# Maximum number of simultaneous PHP workers, size it to the container's RAM (see config/fpm-pool.conf)
+ENV PHP_FPM_MAX_CHILDREN=20
 COPY config/fpm-pool.conf /etc/php85/php-fpm.d/zzz_custom.conf
 COPY config/php.ini /etc/php85/conf.d/zzz_custom.ini
 
@@ -91,6 +98,20 @@ RUN curl -o sqlite.zip -SL https://downloads.wordpress.org/plugin/sqlite-databas
   && chown -R nobody:nobody /usr/src/wordpress/wp-content/plugins/sqlite-database-integration \
   && chown nobody:nobody /usr/src/wordpress/wp-content/db.php
 
+# Add atec Cache APCu plugin and install its persistent object cache drop-in.
+# The plugin normally builds wp-content/object-cache.php when the object cache is enabled in its settings;
+# the same thing is done here at build time (driver inserted into the drop-in template, as the plugin does).
+RUN curl -o atec-cache-apcu.zip -SL https://downloads.wordpress.org/plugin/atec-cache-apcu.2.3.77.zip \
+  && unzip atec-cache-apcu.zip -d /usr/src/wordpress/wp-content/plugins \
+  && rm atec-cache-apcu.zip \
+  && php85 -r '$d = "/usr/src/wordpress/wp-content/plugins/atec-cache-apcu/install/"; \
+       $driver = str_replace(["<?php\n", ">?"], "", file_get_contents($d . "object-cache-driver.inc")); \
+       file_put_contents("/usr/src/wordpress/wp-content/object-cache.php", str_replace("/* OC INSERT DRIVER */", $driver, file_get_contents($d . "object-cache.php")));' \
+  && grep -q ATEC_OC_ACTIVE_APCU /usr/src/wordpress/wp-content/object-cache.php \
+  && php85 -l /usr/src/wordpress/wp-content/object-cache.php \
+  && chown -R nobody:nobody /usr/src/wordpress/wp-content/plugins/atec-cache-apcu \
+  && chown nobody:nobody /usr/src/wordpress/wp-content/object-cache.php
+
 # Add WP CLI
 ENV WP_CLI_CONFIG_PATH=/usr/src/wordpress/wp-cli.yml
 RUN curl -o /usr/local/bin/wp https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
@@ -99,7 +120,7 @@ COPY --chown=nobody:nobody wp-cli.yml /usr/src/wordpress/
 
 # WP config
 COPY --chown=nobody:nobody wp-config.php /usr/src/wordpress
-RUN chmod 640 /usr/src/wordpress/wp-config.php 
+RUN chmod 640 /usr/src/wordpress/wp-config.php
 
 # Link wp-secrets to location on wp-content
 RUN ln -s /var/www/wp-content/wp-secrets.php /usr/src/wordpress/wp-secrets.php
@@ -112,4 +133,5 @@ EXPOSE 80
 
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
 
-HEALTHCHECK --timeout=10s CMD curl --silent --fail http://127.0.0.1/wp-login.php
+# Checks nginx and PHP-FPM through the lightweight FPM ping endpoint (no WordPress/SQLite bootstrap)
+HEALTHCHECK --timeout=10s CMD curl --silent --fail http://127.0.0.1/fpm-ping
