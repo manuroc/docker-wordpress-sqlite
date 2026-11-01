@@ -1,4 +1,4 @@
-FROM alpine:3.23
+FROM alpine:3.24
 
 # Build arguments for OCI annotations
 ARG BUILD_DATE
@@ -14,13 +14,13 @@ LABEL org.opencontainers.image.source="https://github.com/TrafeX/docker-wordpres
 LABEL org.opencontainers.image.version="${VERSION}"
 LABEL org.opencontainers.image.revision="${VCS_REF}"
 LABEL org.opencontainers.image.vendor="TrafeX"
-LABEL org.opencontainers.image.title="WordPress with Nginx 1.28 & PHP-FPM 8.4"
-LABEL org.opencontainers.image.description="Lightweight WordPress container with Nginx 1.28 & PHP-FPM 8.4 based on Alpine Linux."
+LABEL org.opencontainers.image.title="WordPress with Nginx 1.30 & PHP-FPM 8.5"
+LABEL org.opencontainers.image.description="Lightweight WordPress container with Nginx 1.30 & PHP-FPM 8.5 based on Alpine Linux."
 
 # Install packages
 RUN apk --no-cache add \
-  php85 \
-  php85-fpm \
+  'php85>=8.5.12' \
+  'php85-fpm>=8.5.12' \
   php85-mysqli \
   php85-json \
   php85-openssl \
@@ -40,7 +40,6 @@ RUN apk --no-cache add \
   php85-ctype \
   php85-mbstring \
   php85-zip \
-  php85-opcache \
   php85-iconv \
   php85-pecl-imagick \
   php85-session \
@@ -72,8 +71,8 @@ WORKDIR /var/www/wp-content
 RUN chown -R nobody:nobody /var/www
 
 # WordPress
-ENV WORDPRESS_VERSION=7.0
-ENV WORDPRESS_SHA1=e50bb75667ecaa0eac0694fb3c7b024afc96fde0
+ENV WORDPRESS_VERSION=7.1.3
+ENV WORDPRESS_SHA1=491a78c7676b15dffcc69130c6054b8f49228a91
 
 RUN mkdir -p /usr/src
 
@@ -85,7 +84,7 @@ RUN curl -o wordpress.tar.gz -SL https://wordpress.org/wordpress-${WORDPRESS_VER
   && chown -R nobody:nobody /usr/src/wordpress
 
 # Add SQLite DB plugin
-RUN curl -o sqlite.zip -SL https://downloads.wordpress.org/plugin/sqlite-database-integration.2.2.23.zip \
+RUN curl -o sqlite.zip -SL https://downloads.wordpress.org/plugin/sqlite-database-integration.3.1.2.zip \
   && unzip sqlite.zip -d /usr/src/wordpress/wp-content/plugins \
   && cp /usr/src/wordpress/wp-content/plugins/sqlite-database-integration/db.copy /usr/src/wordpress/wp-content/db.php \
   && rm sqlite.zip \

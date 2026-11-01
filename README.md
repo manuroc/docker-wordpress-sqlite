@@ -1,12 +1,12 @@
 # WordPress Docker Container
 
-Lightweight WordPress container with Nginx 1.28 & PHP-FPM 8.5 based on Alpine Linux.
+Lightweight WordPress container with Nginx 1.30 & PHP-FPM 8.5 based on Alpine Linux.
 
 Uses SQLite for database storage for speed and portability. No separate MySQL or MariaDB container necessary.
 
 Extra PHP extensions have also been added for performance, such as APCu.
 
-_WordPress version currently installed:_ **7.0**
+_WordPress version currently installed:_ **7.1.3**
 
 - Can be used in production
 - Optimized for 100 concurrent users
