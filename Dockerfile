@@ -8,9 +8,9 @@ ARG VCS_REF
 # OCI annotations
 LABEL org.opencontainers.image.created="${BUILD_DATE}"
 LABEL org.opencontainers.image.authors="Tim de Pater <code@trafex.nl>"
-LABEL org.opencontainers.image.url="https://github.com/TrafeX/docker-wordpress"
-LABEL org.opencontainers.image.documentation="https://github.com/TrafeX/docker-wordpress"
-LABEL org.opencontainers.image.source="https://github.com/TrafeX/docker-wordpress"
+LABEL org.opencontainers.image.url="https://github.com/manuroc/docker-wordpress-sqlite"
+LABEL org.opencontainers.image.documentation="https://github.com/manuroc/docker-wordpress-sqlite"
+LABEL org.opencontainers.image.source="https://github.com/manuroc/docker-wordpress-sqlite"
 LABEL org.opencontainers.image.version="${VERSION}"
 LABEL org.opencontainers.image.revision="${VCS_REF}"
 LABEL org.opencontainers.image.vendor="TrafeX"

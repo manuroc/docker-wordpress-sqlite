@@ -12,7 +12,7 @@ _WordPress version currently installed:_ **7.1.3**
 - Optimized for 100 concurrent users
 - Optimized to only use resources when there's traffic (by using PHP-FPM's ondemand PM)
 - Works with Amazon Cloudfront or CloudFlare as SSL terminator and CDN
-- Multi-platform, supporting AMD4, ARMv6, ARMv7, ARM64
+- Multi-platform, supporting AMD64 and ARM64
 - Built on the lightweight Alpine Linux distribution
 - Small Docker image size (+/-90MB)
 - Uses PHP 8.5 for the best performance, low cpu usage & memory footprint
@@ -36,7 +36,13 @@ This image follows the **Debian versioning convention** for tagging: `<wordpress
 - `<major>.<minor>` - Latest patch and revision (e.g., `6.8` → `6.8.1-2`)
 - `<major>` - Latest minor, patch and revision (e.g., `6` → `6.8.1-2`)
 
-**For production use**, pin to a specific full version tag (e.g., `trafex/wordpress:6.8.1-1`) to ensure reproducible deployments and controlled updates.
+**For production use**, pin to a specific full version tag (e.g., `ghcr.io/manuroc/docker-wordpress-sqlite:7.1.3-1`) to ensure reproducible deployments and controlled updates.
+
+### Image
+
+Published to the GitHub Container Registry on every push to `master`:
+
+    docker pull ghcr.io/manuroc/docker-wordpress-sqlite:latest
 
 ### Running the Container
 
