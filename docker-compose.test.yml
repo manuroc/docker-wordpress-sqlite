@@ -1,0 +1,15 @@
+services:
+  wordpress:
+    build: ./
+    image: ${IMAGE_NAME}:${IMAGE_TAG}
+    environment:
+      WORDPRESS_SITE_URL: http://localhost
+      FS_METHOD: direct
+
+  sut:
+    image: alpine:3.23
+    depends_on:
+      - wordpress
+    command: /tmp/run_tests.sh
+    volumes:
+      - "./run_tests.sh:/tmp/run_tests.sh:ro"
