@@ -45,16 +45,18 @@ See [docker-compose.yml](https://github.com/manuroc/docker-wordpress-sqlite/blob
     docker-compose up
 
 
-### Performance
+### Optimizations & additions (compared to upstream)
 
-- **Page cache:** nginx caches pages for anonymous visitors for 2 minutes (`X-FastCGI-Cache: HIT/MISS/BYPASS` response header). Logged-in users, POST requests, URLs with a query string, `wp-admin`, `wp-login.php`, `wp-json` and WooCommerce cart/checkout/account pages are never cached. Nothing purges this cache when content changes, hence the short lifetime.
-- **Object cache:** the [atec Cache APCu](https://wordpress.org/plugins/atec-cache-apcu/) object cache drop-in is installed on new volumes. Optionally activate the plugin in wp-admin for statistics and settings (leave its page cache off, nginx handles that).
-- **SQLite:** the SQLite Database Integration plugin already uses WAL journaling and `synchronous=NORMAL`.
-- **OPcache** does not check file timestamps, because the code is baked into the image. Set `OPCACHE_VALIDATE_TIMESTAMPS=1` if you install or update plugins/themes from wp-admin, or restart the container afterwards.
-- **`PHP_FPM_MAX_CHILDREN`** (default `20`) is the maximum number of PHP workers. Size it to the container's memory (roughly 10 per 512MB).
-- `wp-login.php` and `xmlrpc.php` are rate limited per client IP.
+- **SQLite** instead of MySQL (SQLite Database Integration plugin, WAL mode), plus `pdo_sqlite`, APCu and igbinary.
+- **Persistent object cache:** atec Cache APCu drop-in, installed on new volumes (leave the plugin's own page cache off).
+- **Page cache:** nginx FastCGI cache for anonymous visitors (2 min, see the `X-FastCGI-Cache` header). Logged-in users, POSTs, query strings, `wp-admin`, `wp-json` and WooCommerce cart/checkout/account are never cached.
+- **Tuned nginx/PHP:** `sendfile`, open file cache, gzip 5, OPcache without timestamp checks, JIT off, smaller APCu/OPcache.
+  Set `OPCACHE_VALIDATE_TIMESTAMPS=1` if you update plugins/themes from wp-admin, otherwise restart the container after updates.
+- **`PHP_FPM_MAX_CHILDREN`** (default `20`): PHP worker limit, roughly 10 per 512MB RAM.
+- **Hardening:** rate limiting on `wp-login.php` and `xmlrpc.php`, security headers, locally generated secret keys.
+- **Reliability:** PHP-FPM and nginx restart automatically, lightweight `/fpm-ping` healthcheck, faster startup (only fixes changed permissions).
 
-Existing volumes keep the files they were created with: to get the object cache on a volume created before this change, install the atec Cache APCu plugin from wp-admin and enable its object cache (or recreate the volume).
+Volumes created before these changes keep their old files: install the atec Cache APCu plugin from wp-admin and enable its object cache.
 
 ### WP-CLI
 
