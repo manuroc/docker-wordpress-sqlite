@@ -71,6 +71,12 @@ bundled plugins (SQLite Database Integration, atec Cache APCu). When it finds on
 smoke tests on that branch. Merging the pull request publishes the new image. It needs the repository setting *Actions > General > Allow GitHub Actions to create
 and approve pull requests*. You can also start it by hand from the Actions tab.
 
+### Bundled plugins stay in step with the image
+
+`wp-content` lives on a volume, which only receives the bundled plugins (SQLite Database Integration, atec Cache APCu) the first time. On every start the
+entrypoint therefore checks them: the SQLite plugin is copied back if it is missing (for example after a restore replaced the plugins folder), and both are updated
+when the image carries a newer version. A newer version on the volume is never touched, and the optional atec plugin is not re-added once removed.
+
 ### WP-CLI
 
 This image includes [wp-cli](https://wp-cli.org/) which can be used like this:
