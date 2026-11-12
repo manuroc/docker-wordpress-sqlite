@@ -17,6 +17,11 @@ foreach ($_ENV as $key => $value) {
     }
 }
 
+// The SQLite driver needs a database name, any value works (set DB_NAME to use another one)
+if (!defined('DB_NAME')) {
+    define('DB_NAME', 'wordpress');
+}
+
 if (!defined('ABSPATH')) {
     define('ABSPATH', dirname(__FILE__) . '/');
 }
