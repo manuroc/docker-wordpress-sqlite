@@ -78,8 +78,8 @@ WORKDIR /var/www/wp-content
 RUN chown -R nobody:nobody /var/www
 
 # WordPress
-ENV WORDPRESS_VERSION=7.1.3
-ENV WORDPRESS_SHA1=491a78c7676b15dffcc69130c6054b8f49228a91
+ENV WORDPRESS_VERSION=7.1.4
+ENV WORDPRESS_SHA1=b175879c4fb2d35300f9abe1153da9b543a35a2b
 
 RUN mkdir -p /usr/src
 
@@ -91,7 +91,7 @@ RUN curl -o wordpress.tar.gz -SL https://wordpress.org/wordpress-${WORDPRESS_VER
   && chown -R nobody:nobody /usr/src/wordpress
 
 # Add SQLite DB plugin
-RUN curl -o sqlite.zip -SL https://downloads.wordpress.org/plugin/sqlite-database-integration.3.1.2.zip \
+RUN curl -o sqlite.zip -SL https://downloads.wordpress.org/plugin/sqlite-database-integration.3.1.3.zip \
   && unzip sqlite.zip -d /usr/src/wordpress/wp-content/plugins \
   && cp /usr/src/wordpress/wp-content/plugins/sqlite-database-integration/db.copy /usr/src/wordpress/wp-content/db.php \
   && rm sqlite.zip \

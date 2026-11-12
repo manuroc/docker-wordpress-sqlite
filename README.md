@@ -6,7 +6,7 @@ Uses SQLite for database storage for speed and portability. No separate MySQL or
 
 Extra PHP extensions have also been added for performance, such as APCu.
 
-_WordPress version currently installed:_ **7.1.3**
+_WordPress version currently installed:_ **7.1.4**
 
 - Can be used in production
 - Optimized for 100 concurrent users
@@ -63,6 +63,13 @@ See [docker-compose.yml](https://github.com/manuroc/docker-wordpress-sqlite/blob
 - **Reliability:** PHP-FPM and nginx restart automatically, lightweight `/fpm-ping` healthcheck, faster startup (only fixes changed permissions).
 
 Volumes created before these changes keep their old files: install the atec Cache APCu plugin from wp-admin and enable its object cache.
+
+### Automatic updates
+
+A daily workflow (`.github/workflows/update-versions.yaml`, script `scripts/update-versions.py`) looks for a newer WordPress release and newer versions of the
+bundled plugins (SQLite Database Integration, atec Cache APCu). When it finds one it opens a pull request, verifies the WordPress checksum, and starts the build and
+smoke tests on that branch. Merging the pull request publishes the new image. It needs the repository setting *Actions > General > Allow GitHub Actions to create
+and approve pull requests*. You can also start it by hand from the Actions tab.
 
 ### WP-CLI
 

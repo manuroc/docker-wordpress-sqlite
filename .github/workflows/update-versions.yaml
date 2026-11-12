@@ -1,0 +1,54 @@
+name: Update WordPress and plugin versions
+
+# Checks every day for a newer WordPress release or newer versions of the two bundled plugins
+# (sqlite-database-integration, atec-cache-apcu). If there is one, it opens a pull request with the
+# change and starts the build and smoke tests on that branch. Merging the pull request publishes the image.
+#
+# Needs: Settings > Actions > General > "Allow GitHub Actions to create and approve pull requests".
+
+on:
+  schedule:
+    - cron: "17 5 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: write
+
+env:
+  BRANCH: auto/update-versions
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Look for new versions
+        id: update
+        run: python3 -I scripts/update-versions.py
+
+      - name: Commit, push and open a pull request
+        if: steps.update.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SUMMARY: ${{ steps.update.outputs.summary }}
+        run: |-
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B "$BRANCH"
+          git add Dockerfile README.md
+          git commit -m "Update versions: $SUMMARY"
+          git push --force origin "$BRANCH"
+          if gh pr view "$BRANCH" --json state --jq .state 2>/dev/null | grep -q OPEN; then
+            echo "A pull request for $BRANCH is already open, it now has the newer commit."
+          else
+            gh pr create --base "${{ github.event.repository.default_branch }}" --head "$BRANCH" \
+              --title "Update versions: $SUMMARY" \
+              --body "Automatic update: $SUMMARY. The build and smoke tests are started on this branch; check the Actions tab, then merge to publish a new image." \
+              || echo "::warning::Could not open a pull request (enable 'Allow GitHub Actions to create and approve pull requests' in Settings > Actions > General). The branch $BRANCH was pushed."
+          fi
+          # Pushes and pull requests made with the built-in token don't start other workflows, but a manual dispatch does
+          gh workflow run build.yaml --ref "$BRANCH"
