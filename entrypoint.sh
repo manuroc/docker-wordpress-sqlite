@@ -16,7 +16,7 @@ fi
 
 # Keep the bundled plugins in step with the image. The volume only gets them the first time, and a restore that replaces the
 # plugins folder (for example UpdraftPlus restoring a backup of another site) would remove them and break the database layer.
-# A plugin is copied in when it is missing (only the required one) or older than the image's version; a newer one is never touched.
+# A bundled plugin is copied in when it is missing or older than the image's version; a newer one is never touched.
 plugin_version() {
     sed -n 's/^[[:space:]*]*Version:[[:space:]]*//p' "$1" 2> /dev/null | head -n 1 | tr -d '\r[:space:]'
 }
@@ -38,7 +38,7 @@ sync_plugin() {
     cp -r "$src" "$dst"
 }
 sync_plugin sqlite-database-integration load.php yes
-sync_plugin atec-cache-apcu atec-cache-apcu.php no
+sync_plugin atec-cache-apcu atec-cache-apcu.php yes
 # The db.php drop-in must be the one that loads the SQLite plugin. It is put back when it is missing, or when another plugin's db.php
 # (for example Query Monitor's, which may arrive with a restored backup of another site) replaced it. The other file is kept as db.php.other.
 dropin_source="$WP_CONTENT/plugins/sqlite-database-integration/db.copy"
