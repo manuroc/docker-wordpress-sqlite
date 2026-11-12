@@ -39,9 +39,15 @@ sync_plugin() {
 }
 sync_plugin sqlite-database-integration load.php yes
 sync_plugin atec-cache-apcu atec-cache-apcu.php no
-# The drop-in that loads the SQLite plugin
-if [ ! -f "$WP_CONTENT/db.php" ] && [ -f "$WP_CONTENT/plugins/sqlite-database-integration/db.copy" ]; then
-    cp "$WP_CONTENT/plugins/sqlite-database-integration/db.copy" "$WP_CONTENT/db.php"
+# The db.php drop-in must be the one that loads the SQLite plugin. It is put back when it is missing, or when another plugin's db.php
+# (for example Query Monitor's, which may arrive with a restored backup of another site) replaced it. The other file is kept as db.php.other.
+dropin_source="$WP_CONTENT/plugins/sqlite-database-integration/db.copy"
+if [ -f "$dropin_source" ]; then
+    if [ -f "$WP_CONTENT/db.php" ] && ! grep -q SQLITE_DB_DROPIN_VERSION "$WP_CONTENT/db.php"; then
+        echo "db.php is not the SQLite drop-in; keeping it as db.php.other and restoring the SQLite one"
+        mv "$WP_CONTENT/db.php" "$WP_CONTENT/db.php.other"
+    fi
+    [ -f "$WP_CONTENT/db.php" ] || cp "$dropin_source" "$WP_CONTENT/db.php"
 fi
 
 # Only touch ownership and permissions of paths that are not already correct, instead of

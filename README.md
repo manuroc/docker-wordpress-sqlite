@@ -76,6 +76,7 @@ and approve pull requests*. You can also start it by hand from the Actions tab.
 `wp-content` lives on a volume, which only receives the bundled plugins (SQLite Database Integration, atec Cache APCu) the first time. On every start the
 entrypoint therefore checks them: the SQLite plugin is copied back if it is missing (for example after a restore replaced the plugins folder), and both are updated
 when the image carries a newer version. A newer version on the volume is never touched, and the optional atec plugin is not re-added once removed.
+The `db.php` drop-in is protected the same way: if another plugin's `db.php` replaces it (for example in a restored backup), it is kept as `db.php.other` and the SQLite one is put back.
 
 ### WP-CLI
 
