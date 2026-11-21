@@ -6,7 +6,7 @@ Uses SQLite for database storage for speed and portability. No separate MySQL or
 
 Extra PHP extensions have also been added for performance, such as APCu.
 
-_WordPress version currently installed:_ **7.1.4**
+_WordPress version currently installed:_ **7.1.5**
 
 - Can be used in production
 - Optimized for 100 concurrent users
