@@ -78,8 +78,8 @@ WORKDIR /var/www/wp-content
 RUN chown -R nobody:nobody /var/www
 
 # WordPress
-ENV WORDPRESS_VERSION=7.1.4
-ENV WORDPRESS_SHA1=b175879c4fb2d35300f9abe1153da9b543a35a2b
+ENV WORDPRESS_VERSION=7.1.5
+ENV WORDPRESS_SHA1=f79cd80a8f8152edd88ef9be859ae765f2ec6c36
 
 RUN mkdir -p /usr/src
 
@@ -101,7 +101,7 @@ RUN curl -o sqlite.zip -SL https://downloads.wordpress.org/plugin/sqlite-databas
 # Add atec Cache APCu plugin and install its persistent object cache drop-in.
 # The plugin normally builds wp-content/object-cache.php when the object cache is enabled in its settings;
 # the same thing is done here at build time (driver inserted into the drop-in template, as the plugin does).
-RUN curl -o atec-cache-apcu.zip -SL https://downloads.wordpress.org/plugin/atec-cache-apcu.2.3.77.zip \
+RUN curl -o atec-cache-apcu.zip -SL https://downloads.wordpress.org/plugin/atec-cache-apcu.2.3.79.zip \
   && unzip atec-cache-apcu.zip -d /usr/src/wordpress/wp-content/plugins \
   && rm atec-cache-apcu.zip \
   && php85 -r '$d = "/usr/src/wordpress/wp-content/plugins/atec-cache-apcu/install/"; \
